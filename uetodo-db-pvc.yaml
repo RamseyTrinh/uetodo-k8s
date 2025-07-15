@@ -1,10 +1,11 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
+apiVersion: v1                          # API version cho PVC
+kind: PersistentVolumeClaim            # Tài nguyên yêu cầu lưu trữ (PVC)
 metadata:
-  name: uetodo-db-pvc
+  name: uetodo-db-pvc                  # Tên PVC để dùng trong Deployment
+
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce                    # Chỉ một Pod có thể đọc/ghi cùng lúc (thường dùng cho DB)
   resources:
     requests:
-      storage: 5Gi
+      storage: 5Gi                     # Yêu cầu cấp 5GB dung lượng lưu trữ

@@ -1,20 +1,23 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1                         # API version cho Deployment
+kind: Deployment                            # Loại tài nguyên là Deployment
 metadata:
-  name: uetodo-frontend
-  namespace: uetodo
+  name: uetodo-frontend                     # Tên Deployment frontend
+  namespace: uetodo                         # Namespace chứa Deployment này
+
 spec:
-  replicas: 2
+  replicas: 2                               # Số lượng Pod frontend chạy song song
   selector:
     matchLabels:
-      app: uetodo-frontend
+      app: uetodo-frontend                  # Selector chọn Pod có label này
+
   template:
     metadata:
       labels:
-        app: uetodo-frontend
+        app: uetodo-frontend                # Gắn label cho Pod
+
     spec:
       containers:
-        - name: frontend
-          image: ramseytrinh338/uetodo-frontend:v4
+        - name: frontend                     # Tên container frontend
+          image: ramseytrinh338/uetodo-frontend:v4  # Image frontend đã build sẵn
           ports:
-            - containerPort: 80
+            - containerPort: 80              # Mở port 80 (HTTP) trong container

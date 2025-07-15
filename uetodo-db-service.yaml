@@ -1,14 +1,15 @@
-apiVersion: v1
-kind: Service
+apiVersion: v1                            # API version cho Service
+kind: Service                             # Định nghĩa một Kubernetes Service
 metadata:
-  name: uetodo-db-service
+  name: uetodo-db-service                 # Tên Service để các Pod khác gọi tới (DNS: uetodo-db-service)
   labels:
-    app: uetodo-db
+    app: uetodo-db                        # Nhãn dùng để phân loại Service
+
 spec:
   selector:
-    app: uetodo-db
+    app: uetodo-db                        # Kết nối với Pod có label app: uetodo-db
   ports:
-    - protocol: TCP
-      port: 5432 # Cổng của Service
-      targetPort: 5432 # Cổng của container Postgres
-  type: ClusterIP # Chỉ truy cập được từ bên trong cụm
+    - protocol: TCP                       # Giao thức TCP dùng cho DB
+      port: 5432                          # Cổng mà các Pod khác sẽ truy cập
+      targetPort: 5432                    # Cổng thật trong container PostgreSQL
+  type: ClusterIP                         # Chỉ cho phép truy cập nội bộ trong cụm (cluster)

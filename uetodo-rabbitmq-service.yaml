@@ -1,19 +1,23 @@
-apiVersion: v1
-kind: Service
+apiVersion: v1                            # API version cho Service
+kind: Service                             # Loại tài nguyên là Service
 metadata:
-  name: uetodo-rabbitmq-service
+  name: uetodo-rabbitmq-service           # Tên Service RabbitMQ
   labels:
-    app: uetodo-rabbitmq
+    app: uetodo-rabbitmq                   # Nhãn để định danh Service
+
 spec:
   selector:
-    app: uetodo-rabbitmq
+    app: uetodo-rabbitmq                   # Chọn Pod có label này (RabbitMQ Pod)
+
   ports:
-    - name: amqp
+    - name: amqp                          # Tên port AMQP
+      protocol: TCP                       # Giao thức TCP
+      port: 5672                         # Cổng expose trong cluster
+      targetPort: 5672                   # Cổng thực tế trong container RabbitMQ
+
+    - name: management                    # Tên port Web management UI
       protocol: TCP
-      port: 5672
-      targetPort: 5672
-    - name: management
-      protocol: TCP
-      port: 15672
-      targetPort: 15672
-  type: ClusterIP
+      port: 15672                        # Cổng expose management UI
+      targetPort: 15672                  # Cổng thực tế trong container
+
+  type: ClusterIP                        # Service chỉ truy cập nội bộ trong cluster

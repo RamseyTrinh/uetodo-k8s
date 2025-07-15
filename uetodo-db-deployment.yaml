@@ -1,34 +1,41 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1                            # API version cho Deployment
+kind: Deployment                               # Tài nguyên là Deployment
 metadata:
-  name: uetodo-db
+  name: uetodo-db                              # Tên của Deployment (DB)
   labels:
-    app: uetodo-db
+    app: uetodo-db                             # Gắn label để định danh và chọn Pod
+
 spec:
-  replicas: 1
+  replicas: 1                                  # Số lượng Pod PostgreSQL (chỉ cần 1 bản)
   selector:
     matchLabels:
-      app: uetodo-db
+      app: uetodo-db                           # Chọn Pod có label này
+
   template:
     metadata:
       labels:
-        app: uetodo-db
+        app: uetodo-db                         # Gắn label cho Pod DB
+
     spec:
       containers:
-      - name: postgres
-        image: postgres:16
+      - name: postgres                         # Tên container chạy PostgreSQL
+        image: postgres:16                     # Image chính thức của PostgreSQL (v16)
         ports:
-        - containerPort: 5432
+        - containerPort: 5432                  # Mở port PostgreSQL trong container
+
         envFrom:
         - secretRef:
-            name: uetodo-db-secret
+            name: uetodo-db-secret             # Load các biến nhạy cảm (user, password, db) từ Secret
+
         env:
         - name: PGDATA
-          value: /var/lib/postgresql/data
+          value: /var/lib/postgresql/data      # Đường dẫn dữ liệu PostgreSQL
+
         volumeMounts:
         - name: postgres-storage
-          mountPath: /var/lib/postgresql/
+          mountPath: /var/lib/postgresql/      # Mount volume để lưu trữ dữ liệu vĩnh viễn
+
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
-          claimName: uetodo-db-pvc
+          claimName: uetodo-db-pvc             # PVC dùng để cấp volume lưu trữ

@@ -1,12 +1,13 @@
-apiVersion: v1
-kind: Service
+apiVersion: v1                              # API version cho Service
+kind: Service                               # Loại tài nguyên là Service
 metadata:
-  name: uetodo-frontend-service
-  namespace: uetodo
+  name: uetodo-frontend-service             # Tên Service frontend
+  namespace: uetodo                         # Namespace chứa Service này
+
 spec:
   selector:
-    app: uetodo-frontend
+    app: uetodo-frontend                    # Chọn Pod có label này làm backend cho Service
   ports:
-    - port: 80
-      targetPort: 80
-  type: ClusterIP
+    - port: 80                             # Port mà Service expose trong cluster
+      targetPort: 80                       # Port thực tế trong container frontend
+  type: ClusterIP                          # Service chỉ truy cập nội bộ cluster

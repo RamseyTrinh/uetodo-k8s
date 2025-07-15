@@ -1,28 +1,30 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: networking.k8s.io/v1            # API version cho Ingress (phiên bản mạng)
+kind: Ingress                               # Loại tài nguyên Ingress (điều phối truy cập HTTP)
 metadata:
-  name: uetodo-ingress
-  namespace: uetodo
+  name: uetodo-ingress                      # Tên Ingress
+  namespace: uetodo                         # Namespace chứa Ingress
+
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx                    # Class ingress controller (ở đây là NGINX)
   rules:
-  - host: "app.uetodo.site"
+  - host: "app.uetodo.site"                  # Host frontend (domain frontend)
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /                             # Tất cả các đường dẫn (prefix "/")
+        pathType: Prefix                    # Kiểu path: prefix (bắt đầu với "/")
         backend:
           service:
-            name: uetodo-frontend-service
+            name: uetodo-frontend-service  # Service frontend sẽ nhận traffic
             port:
-              number: 80
-  - host: "api.uetodo.site"
+              number: 80                    # Cổng frontend service
+
+  - host: "api.uetodo.site"                  # Host backend API
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /                             # Tất cả các đường dẫn (prefix "/")
+        pathType: Prefix                    # Kiểu path: prefix
         backend:
           service:
-            name: uetodo-backend-service
+            name: uetodo-backend-service   # Service backend sẽ nhận traffic
             port:
-              number: 5000
+              number: 5000                  # Cổng backend service

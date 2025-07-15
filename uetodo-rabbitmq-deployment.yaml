@@ -1,34 +1,37 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1                          # API version cho Deployment
+kind: Deployment                             # Loại tài nguyên Deployment
 metadata:
-  name: uetodo-rabbitmq
-  namespace: uetodo
+  name: uetodo-rabbitmq                      # Tên Deployment RabbitMQ
+  namespace: uetodo                          # Namespace chứa Deployment
   labels:
-    app: uetodo-rabbitmq
+    app: uetodo-rabbitmq                     # Label định danh Pod RabbitMQ
+
 spec:
-  replicas: 1
+  replicas: 1                                # Số lượng Pod RabbitMQ (chỉ 1 cho cluster nhỏ)
   selector:
     matchLabels:
-      app: uetodo-rabbitmq
+      app: uetodo-rabbitmq                   # Chọn Pod có label này để quản lý
+
   template:
     metadata:
       labels:
-        app: uetodo-rabbitmq
+        app: uetodo-rabbitmq                 # Gắn label cho Pod
+
     spec:
       containers:
-      - name: rabbitmq
-        image: rabbitmq:management
+      - name: rabbitmq                        # Tên container RabbitMQ
+        image: rabbitmq:management            # Image RabbitMQ có giao diện quản lý (management plugin)
         ports:
-        - containerPort: 5672
-        - containerPort: 15672
+        - containerPort: 5672                 # Cổng AMQP dùng để giao tiếp với Celery hoặc app
+        - containerPort: 15672                # Cổng Web UI RabbitMQ (management interface)
         env:
-        - name: RABBITMQ_DEFAULT_USER
+        - name: RABBITMQ_DEFAULT_USER         # Biến môi trường user RabbitMQ
           valueFrom:
             secretKeyRef:
-              name: uetodo-rabbitmq-secret
+              name: uetodo-rabbitmq-secret    # Lấy user từ Secret
               key: RABBITMQ_USER
-        - name: RABBITMQ_DEFAULT_PASS
+        - name: RABBITMQ_DEFAULT_PASS         # Biến môi trường mật khẩu RabbitMQ
           valueFrom:
             secretKeyRef:
-              name: uetodo-rabbitmq-secret
+              name: uetodo-rabbitmq-secret    # Lấy pass từ Secret
               key: RABBITMQ_PASS
