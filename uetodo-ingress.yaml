@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: uetodo-ingress
+  namespace: uetodo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "app.uetodo.site"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: uetodo-frontend-service
+            port:
+              number: 80
+  - host: "api.uetodo.site"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: uetodo-backend-service
+            port:
+              number: 5000

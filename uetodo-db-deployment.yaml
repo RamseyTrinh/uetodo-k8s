@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uetodo-db
+  labels:
+    app: uetodo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uetodo-db
+  template:
+    metadata:
+      labels:
+        app: uetodo-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: uetodo-db-secret
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: uetodo-db-pvc

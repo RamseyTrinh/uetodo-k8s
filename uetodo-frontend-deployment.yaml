@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uetodo-frontend
+  namespace: uetodo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: uetodo-frontend
+  template:
+    metadata:
+      labels:
+        app: uetodo-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ramseytrinh338/uetodo-frontend:v4
+          ports:
+            - containerPort: 80

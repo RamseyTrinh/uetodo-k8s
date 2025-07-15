@@ -1,0 +1,16 @@
+apiVersion: v1                          # API version của Kubernetes cho Service
+kind: Service                           # Loại tài nguyên là Service
+metadata:
+  name: uetodo-backend-service          # Tên của Service
+  namespace: uetodo                     # Namespace mà Service này thuộc về
+  labels:
+    app: uetodo-backend                 # Nhãn để định danh, dùng cho selector
+
+spec:
+  selector:
+    app: uetodo-backend                 # Service sẽ chọn các Pod có label này
+  ports:
+    - protocol: TCP                     # Giao thức dùng để truyền dữ liệu
+      port: 5000                        # Port mà Service expose trong Cluster
+      targetPort: 5000                  # Port trong Pod container mà Service chuyển tiếp đến
+  type: ClusterIP                       # Service chỉ truy cập được nội bộ trong Cluster

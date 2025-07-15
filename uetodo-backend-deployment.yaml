@@ -1,0 +1,54 @@
+apiVersion: apps/v1                             # API version cho Deployment
+kind: Deployment                                # Định nghĩa tài nguyên là Deployment
+metadata:
+  name: uetodo-backend                          # Tên Deployment
+  labels:
+    app: uetodo-backend                         # Label để định danh và dùng cho selector
+
+spec:
+  replicas: 2                                   # Số lượng Pod backend cần chạy (replica)
+  selector:
+    matchLabels:
+      app: uetodo-backend                       # Chọn Pod có label này để quản lý
+
+  template:                                     # Mẫu để tạo các Pod
+    metadata:
+      labels:
+        app: uetodo-backend                     # Gắn label cho Pod
+
+    spec:
+      initContainers:                           # Container khởi tạo (chạy trước container chính)
+      - name: db-migration                      # Tên container khởi tạo
+        image: ramseytrinh338/uetodo-backend:v2 # Image chứa logic migrate DB
+        command: ["sh", "-c", "flask db upgrade"] # Lệnh migrate bằng Flask-Migrate
+        env:                                    # Biến môi trường cho init container
+        - name: FLASK_APP
+          value: "run.py"
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@uetodo-db-service:5432/$(POSTGRES_DB)"
+        envFrom:
+        - secretRef:
+            name: uetodo-db-secret              # Load các biến DB từ Secret
+
+      containers:                               # Container chính của ứng dụng
+      - name: uetodo-backend
+        image: ramseytrinh338/uetodo-backend:v2 # Image chứa backend app
+        command: ["python", "run.py"]           # Lệnh chạy Flask app
+        ports:
+        - containerPort: 5000                   # Mở cổng 5000 cho container
+        env:                                    # Biến môi trường cho Flask app
+        - name: FLASK_APP
+          value: "run.py"
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@uetodo-db-service:5432/$(POSTGRES_DB)"
+        envFrom:
+        - secretRef:
+            name: uetodo-db-secret              # Tải biến môi trường từ secret
+
+        resources:                              # Giới hạn tài nguyên sử dụng
+          requests:                             # Tối thiểu tài nguyên cần
+            cpu: "100m"                         # 100 millicores (0.1 CPU)
+            memory: "128Mi"                     # 128MB RAM
+          limits:                               # Giới hạn tối đa
+            cpu: "500m"                         # 0.5 CPU
+            memory: "512Mi"                     # 512MB RAM

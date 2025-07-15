@@ -1,0 +1,44 @@
+apiVersion: apps/v1                              # API version cho Deployment
+kind: Deployment                                 # Tài nguyên loại Deployment
+metadata:
+  name: uetodo-celery                            # Tên của Deployment
+  namespace: uetodo                              # Namespace chứa resource này
+  labels:
+    app: uetodo-celery                           # Nhãn dùng để nhận diện và select Pod
+
+spec:
+  replicas: 1                                    # Số lượng Pod Celery worker muốn chạy
+  selector:
+    matchLabels:
+      app: uetodo-celery                         # Chọn Pod có label này
+
+  template:                                      # Template để tạo các Pod
+    metadata:
+      labels:
+        app: uetodo-celery                       # Gắn label cho Pod
+
+    spec:
+      containers:
+      - name: celery-worker                      # Tên container Celery worker
+        image: ramseytrinh338/uetodo-backend:v2  # Image chứa celery worker (dùng chung với backend)
+        command: ["celery", "-A", "celery_worker.celery", "worker", "--loglevel=info"] # Lệnh chạy Celery worker
+        env:
+        - name: CELERY_BROKER_URL
+          value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASS)@uetodo-rabbitmq-service:5672//"  # Kết nối đến RabbitMQ
+        - name: FLASK_APP
+          value: "run.py"                        # Biến môi trường cho Flask
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@uetodo-db-service:5432/$(POSTGRES_DB)"  # Kết nối DB
+        envFrom:
+        - secretRef:
+            name: uetodo-db-secret               # Lấy biến DB từ Secret
+        - secretRef:
+            name: uetodo-rabbitmq-secret         # Lấy biến RabbitMQ từ Secret
+
+        resources:                               # Giới hạn tài nguyên
+          requests:
+            cpu: "100m"                          # Tối thiểu 0.1 CPU
+            memory: "128Mi"                      # Tối thiểu 128MB RAM
+          limits:
+            cpu: "500m"                          # Tối đa 0.5 CPU
+            memory: "512Mi"                      # Tối đa 512MB RAM
